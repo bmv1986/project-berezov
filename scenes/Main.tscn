@@ -12,10 +12,6 @@ size = Vector3(30, 1, 30)
 radius = 0.4
 height = 1.8
 
-[sub_resource type="CapsuleMesh" id="3"]
-radius = 0.4
-height = 1.8
-
 [node name="Main" type="Node3D" unique_id=1726286294]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=188183128]
@@ -41,16 +37,7 @@ script = ExtResource("1")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=917075856]
 shape = SubResource("2")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Player" unique_id=248863484]
-mesh = SubResource("3")
+[node name="CameraPivot" type="Node3D" parent="Player" unique_id=21640009]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8151002, -0.2559632)
 
-[node name="Camera3D" type="Camera3D" parent="Player" unique_id=915622759]
-transform = Transform3D(1, 0, 0, 0, 0.766044, 0.642788, 0, -0.642788, 0.766044, 0, 1.8, 5.5)
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Player" unique_id=517545193]
-visible = false
-mesh = SubResource("3")
-
-[node name="Camera3D2" type="Camera3D" parent="Player" unique_id=1434578545]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
-current = true
+[node name="Camera3D" type="Camera3D" parent="Player/CameraPivot" unique_id=915622759]

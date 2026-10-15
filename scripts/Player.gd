@@ -1,67 +1,89 @@
 extends CharacterBody3D
 
-@export var SPEED: float = 6.0
-@export var JUMP_VELOCITY: float = 6.5
-@export var GRAVITY: float = 18.0
+# --- Настройки физики и скорости ---
+@export var walk_speed := 5.0
+@export var sprint_speed := 8.5
+@export var jump_velocity := 4.5
+@export var acceleration := 12.0   # Плавность разгона
+@export var deceleration := 15.0   # Плавность торможения
 
-var velocity: Vector3 = Vector3.ZERO
+# --- Настройки камеры ---
+@export var mouse_sensitivity := 0.002
+@export var camera_pitch_limit := 1.2 # Ограничение наклона камеры вверх/вниз (в радианах)
 
-@onready var camera: Camera3D = get_node_or_null("Camera3D")
+# Гравитация берется из настроек проекта
+var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 
-var yaw: float = 0.0
-var pitch: float = 0.0
+@onready var camera_pivot = $CameraPivot
+@onready var camera = $CameraPivot/Camera3D
 
 func _ready() -> void:
-	if camera == null:
-		push_warning("Player: Camera3D child not found — camera control disabled.")
-	# Capture mouse for gameplay (skip when running in editor)
-	if not Engine.is_editor_hint():
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	# Захватываем курсор мыши при старте игры
+	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+func _unhandled_input(event: InputEvent) -> void:
+	# Освобождение/захват курсора по клавише Escape
+	if event.is_action_pressed("ui_cancel"):
+		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		else:
+			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+	# Обработка движения мыши
+	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		# Вращаем персонажа по горизонтали (ось Y)
+		rotate_y(-event.relative.x * mouse_sensitivity)
+		
+		# Вращаем камеру по вертикали (ось X)
+		camera_pivot.rotate_x(-event.relative.y * mouse_sensitivity)
+		# Ограничиваем наклон, чтобы камера не перевернулась
+		camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, -camera_pitch_limit, camera_pitch_limit)
 
 func _physics_process(delta: float) -> void:
-	# Movement input (WASD)
-	var input_dir := Vector2(
-		Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
-		Input.get_action_strength("move_back") - Input.get_action_strength("move_forward")
-	)
-
-	var dir_world := Vector3.ZERO
-	if input_dir.length() > 0.0:
-		input_dir = input_dir.normalized()
-		# movement relative to player yaw (first-person)
-		var forward := -transform.basis.z
-		forward.y = 0
-		forward = forward.normalized()
-		var right := transform.basis.x
-		right.y = 0
-		right = right.normalized()
-		dir_world = (right * input_dir.x + forward * input_dir.y).normalized()
-		velocity.x = dir_world.x * SPEED
-		velocity.z = dir_world.z * SPEED
-	else:
-		velocity.x = lerp(velocity.x, 0.0, 0.15)
-		velocity.z = lerp(velocity.z, 0.0, 0.15)
-
-	# Gravity and jump
+	# 1. Гравитация
 	if not is_on_floor():
-		velocity.y -= GRAVITY * delta
-	elif Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
+		velocity.y -= gravity * delta
 
-	# Move and get resulting velocity
-	velocity = move_and_slide(velocity, Vector3.UP)
+	# 2. Прыжок (Пробел)
+	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+		velocity.y = jump_velocity
 
-func _input(event) -> void:
-	# Mouse look: yaw rotates body, pitch rotates camera
-	if event is InputEventMouseMotion:
-		yaw -= event.relative.x * 0.003
-		pitch -= event.relative.y * 0.003
-		pitch = clamp(pitch, -1.3, 1.3)
-		rotation.y = yaw
-		if camera:
-			camera.rotation.x = pitch
+	# 3. Расчет направления движения (относительно камеры)
+	# ui_left/right/up/down по умолчанию это A/D/W/S
+	var input_dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	
+	# Получаем векторы "вперед" и "вправо" от глобального положения камеры
+	var forward = camera.global_transform.basis.z
+	var right = camera.global_transform.basis.x
+	
+	# Обнуляем ось Y, чтобы наклон камеры не заставлял персонажа лететь в небо
+	forward.y = 0
+	right.y = 0
+	forward = forward.normalized()
+	right = right.normalized()
+	
+	# Итоговый вектор движения
+	var direction = (forward * -input_dir.y + right * input_dir.x).normalized()
 
-	# ESC to release mouse (use legacy KEY_ESCAPE constant)
-	if event is InputEventKey and event.pressed:
-		if event.scancode == KEY_ESCAPE:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	# 4. Применение скорости (Спринт по Shift)
+	var current_speed = walk_speed
+	if Input.is_key_pressed(KEY_SHIFT):
+		current_speed = sprint_speed
+		
+	var target_velocity = direction * current_speed
+	
+	# Выбираем коэффициент: ускорение при движении, торможение при отпускании клавиш
+	var accel = acceleration if input_dir != Vector2.ZERO else deceleration
+	
+	# Плавно изменяем скорость (lerp)
+	velocity.x = lerp(velocity.x, target_velocity.x, accel * delta)
+	velocity.z = lerp(velocity.z, target_velocity.z, accel * delta)
+
+	# 5. Поворот модели персонажа в сторону движения
+	if direction != Vector3.ZERO:
+		var target_angle = atan2(direction.x, direction.z)
+		# lerp_angle обеспечивает плавный поворот модели
+		rotation.y = lerp_angle(rotation.y, target_angle, 10.0 * delta)
+
+	# 6. Применяем движение
+	move_and_slide()
