@@ -6,7 +6,7 @@ extends CharacterBody3D
 
 var velocity: Vector3 = Vector3.ZERO
 
-onready var camera: Camera3D = get_node_or_null("Camera3D")
+@onready var camera: Camera3D = get_node_or_null("Camera3D")
 
 var yaw: float = 0.0
 var pitch: float = 0.0
