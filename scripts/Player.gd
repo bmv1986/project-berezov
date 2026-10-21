@@ -49,21 +49,23 @@ func _physics_process(delta: float) -> void:
 		velocity.y = jump_velocity
 
 	# 3. Расчет направления движения (относительно камеры)
-	# ui_left/right/up/down по умолчанию это A/D/W/S
 	var input_dir = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	
-	# Получаем векторы "вперед" и "вправо" от глобального положения камеры
-	var forward = camera.global_transform.basis.z
+
+	var forward = -camera.global_transform.basis.z  # <-- МИНУС ЗДЕСЬ
 	var right = camera.global_transform.basis.x
+
+	forward.y = 0
+	right.y = 0
+	forward = forward.normalized()
+	right = right.normalized()
+
+	var direction = (forward * -input_dir.y + right * input_dir.x).normalized()
 	
 	# Обнуляем ось Y, чтобы наклон камеры не заставлял персонажа лететь в небо
 	forward.y = 0
 	right.y = 0
 	forward = forward.normalized()
 	right = right.normalized()
-	
-	# Итоговый вектор движения
-	var direction = (forward * -input_dir.y + right * input_dir.x).normalized()
 
 	# 4. Применение скорости (Спринт по Shift)
 	var current_speed = walk_speed
