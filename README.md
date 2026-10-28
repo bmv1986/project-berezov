@@ -1,34 +1,30 @@
-# Проект Берёзов
+# quality-godot-first-person
+Actually good first person controller for Godot 4.1
+MIT License (credit Colormatic Studios)
 
-Godot 4.7 — минимальный 3D-проект с основной сценой и персонажем с управлением и падением.
+This is a first person controller that was made because there aren't many first person controllers for Godot, and the ones that do exist are pretty bad.
 
-Инструкции:
-1. Клонируйте репозиторий:
-   git clone https://github.com/bmv1986/project-berezov.git
-2. Откройте проект в Godot 4.7: File → Open Folder → выберите папку проекта (где лежит project.godot).
-3. В Project → Project Settings → Input Map добавьте действия (см. ниже) или используйте GUI в настройках проекта.
-4. Для работы с git на локальной машине: см. раздел "Работа локально".
+# Directions
+Move with WASD, space to jump, shift to sprint, control to crouch.
 
-Input Map (рекомендуемые действия):
-- move_forward — W
-- move_back — S
-- move_left — A
-- move_right — D
-- jump — Space
+**FEATURES:**
+ - In-air momentum
+ - Motion smoothing
+ - FOV smoothing
+ - Head bobbing
+ - Crouching
+ - Sprinting
+ 
+ ![editor screenshot](https://i.ibb.co/X5P34h0/fpc-screenshot.png)
 
-Работа локально
+More features incoming
 
-1. Убедитесь, что у вас установлен Git и Godot 4.7.
-2. Клонируйте репозиторий:
-   git clone https://github.com/bmv1986/project-berezov.git
-3. Перейдите в каталог проекта и откройте его в Godot 4.7:
-   cd project-berezov
-   godot         # или откройте Godot и выберите папку проекта
-4. Вносите изменения в сцену и скрипты, затем коммитьте и пушьте:
-   git add .
-   git commit -m "Your message"
-   git push origin main
+Possibly a version of this that is an addon?
 
-Примечания
-- Папка .import/ игнорируется — Godot генерирует её локально.
-- Если хотите, могу добавить файл с настройками Input Map, но проще настроить через GUI в редакторе.
+**If you want to add this to an existing project**, just steal the `data/player` folder.
+
+You will also want to remove the code for pausing, it's the first two lines of `_ready()` and the `_on_pause()` and `_on_unpause()` functions. **Note, you will need to bring your own mouse capturing code.**
+
+The player scene also has a little dot sprite in the middle of the screen, you can either delete that or provide your own cursor image.
+
+If you make a cool game with this program, I would love to hear about it!
