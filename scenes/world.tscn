@@ -1,38 +1,120 @@
-[gd_scene load_steps=8 format=3 uid="uid://dvbgf6drv86br"]
+[gd_scene format=3 uid="uid://cpavyoh2ako83"]
 
-[ext_resource type="PackedScene" uid="uid://cwiu8nsyij4gn" path="res://data/player/player.tscn" id="1_tnv5a"]
-[ext_resource type="Script" path="res://data/scripts/world.gd" id="1_x87ln"]
-[ext_resource type="Texture2D" uid="uid://bfmbndv1sge56" path="res://data/sky.exr" id="3_5hgqm"]
-[ext_resource type="PackedScene" uid="uid://c22h6doyfkijm" path="res://scenes/beryozov.tscn" id="4_ar0dy"]
+[ext_resource type="Script" uid="uid://bwkvt655pfvjd" path="res://scripts/world.gd" id="1_k0juu"]
+[ext_resource type="PackedScene" uid="uid://ffi0cviqxt3" path="res://scenes/bunker.tscn" id="2_71j4m"]
 
-[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_6bxyf"]
-panorama = ExtResource("3_5hgqm")
+[sub_resource type="Environment" id="Environment_bhunq"]
+background_energy_multiplier = 0.0
+ambient_light_energy = 0.0
 
-[sub_resource type="Sky" id="Sky_cvyow"]
-sky_material = SubResource("PanoramaSkyMaterial_6bxyf")
+[sub_resource type="Shader" id="Shader_kadrj"]
+code = "shader_type canvas_item;
 
-[sub_resource type="Environment" id="Environment_xj5u1"]
-background_mode = 2
-sky = SubResource("Sky_cvyow")
-ssao_enabled = true
-fog_light_energy = 0.1
-volumetric_fog_enabled = true
-volumetric_fog_density = 0.02
+uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, repeat_disable, filter_nearest;
 
-[node name="world" type="Node3D"]
-script = ExtResource("1_x87ln")
+uniform float vignette_intensity : hint_range(0.0, 2.0) = 0.1;
+uniform float grain_intensity : hint_range(0.0, 1.0) = 0.15;
+uniform float aberration_strength : hint_range(0.0, 0.05) = 0.02;
+uniform float flicker_intensity : hint_range(0.0, 0.3) = 0.05;
+uniform float sepia_amount : hint_range(0.0, 1.0) = 0.3;
+uniform float fade_blacks : hint_range(0.0, 0.5) = 0.1;
+uniform float barrel_distortion : hint_range(0.0, 8.0) = 5.2;
+uniform float zoom_scale : hint_range(0.5, 1.5) = 0.85;
 
-[node name="player" parent="." instance=ExtResource("1_tnv5a")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+float random(vec2 st) {
+    return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+}
 
-[node name="environment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_xj5u1")
+vec2 barrel_distort(vec2 uv, float k) {
+    vec2 centered = uv - 0.5;
+    float r2 = dot(centered, centered);
+    centered *= 1.0 + k * r2;
+    return centered + 0.5;
+}
 
-[node name="sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.933167, 0.309878, -0.182139, 0, 0.506726, 0.862107, 0.359443, -0.80449, 0.47286, -66.2375, 35.0022, 0)
-shadow_enabled = true
+void fragment() {
+    vec2 uv = SCREEN_UV;
 
-[node name="geometry" type="Node3D" parent="."]
+    // Применяем бочкообразную дисторсию (очень сильную для дверного глазка)
+    uv = barrel_distort(uv, barrel_distortion);
 
-[node name="beryozov" parent="." instance=ExtResource("4_ar0dy")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.67262, 0.627931, 0.450943)
+    // Масштабируем, чтобы картинка вписывалась в экран (компенсация дисторсии)
+    uv = (uv - 0.5) * zoom_scale + 0.5;
+
+    // Хроматическая аберрация с радиальным градиентом
+    vec2 to_center = uv - 0.5;
+    float dist = length(to_center);
+    vec2 dir = normalize(to_center + 0.0001);
+    float current_aberration = aberration_strength * dist;
+
+    float r = texture(SCREEN_TEXTURE, uv + dir * current_aberration).r;
+    float g = texture(SCREEN_TEXTURE, uv).g;
+    float b = texture(SCREEN_TEXTURE, uv - dir * current_aberration).b;
+    vec3 col = vec3(r, g, b);
+
+    // Лёгкая виньетка (почти незаметная)
+    vec2 center = uv - 0.5;
+    float vignette_dist = dot(center, center);
+    col *= 1.0 - vignette_dist * vignette_intensity;
+
+    // Зерно пленки
+    float grain = random(uv * TIME * 50.0) * grain_intensity;
+    col += grain - (grain_intensity * 0.5);
+
+    // Мерцание экспозиции
+    float flicker = 1.0 + (random(vec2(TIME * 15.0, 0.0)) - 0.5) * flicker_intensity;
+    col *= flicker;
+
+    // Выцветание
+    col = mix(col, vec3(0.4, 0.38, 0.35), fade_blacks);
+
+    // Сепия
+    vec3 sepia = vec3(
+        dot(col, vec3(0.393, 0.769, 0.189)),
+        dot(col, vec3(0.349, 0.686, 0.168)),
+        dot(col, vec3(0.272, 0.534, 0.131))
+    );
+    col = mix(col, sepia, sepia_amount);
+
+    COLOR = vec4(col, 1.0);
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xq77f"]
+shader = SubResource("Shader_kadrj")
+shader_parameter/vignette_intensity = 0.6
+shader_parameter/grain_intensity = 0.15
+shader_parameter/aberration_strength = 0.015
+shader_parameter/flicker_intensity = 0.05
+shader_parameter/sepia_amount = 0.3
+shader_parameter/fade_blacks = 0.1
+shader_parameter/barrel_distortion = 0.3
+shader_parameter/zoom_scale = 0.85
+
+[node name="world" type="Node3D" unique_id=1239968802]
+script = ExtResource("1_k0juu")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=736620630]
+transform = Transform3D(0.7417595, 0.30164802, -0.59900033, 0.019069452, 0.8832953, 0.46842915, 0.67039484, -0.3588844, 0.64944035, -2.9705899, 2.6334937, 2.7314136)
+fov = 55.53253
+
+[node name="bunker" parent="." unique_id=1739662495 instance=ExtResource("2_71j4m")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.3421984e-05, -0.0043923855, 0.00023770332)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=335235188]
+environment = SubResource("Environment_bhunq")
+
+[node name="PostProcessing" type="CanvasLayer" parent="." unique_id=238937654]
+layer = 10
+
+[node name="ColorRect" type="ColorRect" parent="PostProcessing" unique_id=1511790760]
+material = SubResource("ShaderMaterial_xq77f")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Camera2" type="Camera3D" parent="." unique_id=2053568078]
+transform = Transform3D(-0.8805752, -0.2213209, 0.4190519, 0.01235602, 0.8732273, 0.48715648, -0.47374544, 0.43415576, -0.76620775, -0.35341263, 2.9583395, -8.663044)
+fov = 61.07289

@@ -1,18 +1,34 @@
 [gd_scene format=3 uid="uid://ffi0cviqxt3"]
 
-[ext_resource type="PackedScene" uid="uid://dpfbx0o611347" path="res://models/build/bunker.glb" id="1_764y3"]
+[ext_resource type="PackedScene" uid="uid://170mn7nnoq38" path="res://models/build/bunker.glb" id="1_764y3"]
 [ext_resource type="Texture2D" uid="uid://bwn06ug7h603r" path="res://decal/1.png" id="2_cyfgi"]
-[ext_resource type="LightmapGIData" uid="uid://bqsb5loym7i4o" path="res://scenes/world2.lmbake" id="2_ewk1p"]
+[ext_resource type="LightmapGIData" uid="uid://dxrhnhpgjixrn" path="res://scenes/bunker.lmbake" id="3_cyfgi"]
+[ext_resource type="PackedScene" uid="uid://bcr4tdjvonwhf" path="res://models/build/door1.glb" id="4_hk1w7"]
+[ext_resource type="Script" uid="uid://dgh2lfpc0n288" path="res://scenes/GateController.gd" id="5_tyiie"]
 
 [node name="bunker" type="Node3D" unique_id=1739662495]
 
 [node name="bunker2" parent="." unique_id=479578058 instance=ExtResource("1_764y3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18733144, 0, 0.17221904)
 
+[node name="gate" parent="bunker2" unique_id=520104510 instance=ExtResource("4_hk1w7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1789997, 0, -3.1375606)
+script = ExtResource("5_tyiie")
+
 [node name="AreaLight3D" type="AreaLight3D" parent="bunker2" unique_id=412284505]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.29761672, 2.922669, -0.639391)
 visible = false
 light_energy = 3.222
+shadow_enabled = true
+shadow_bias = 2.253
+shadow_normal_bias = 0.444
+shadow_reverse_cull_face = true
+shadow_blur = 2.736
+
+[node name="AreaLight3D10" type="AreaLight3D" parent="bunker2" unique_id=2037362313]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.3099988, 2.922669, -6.34709)
+visible = false
+light_energy = 1.592
 shadow_enabled = true
 shadow_bias = 2.253
 shadow_normal_bias = 0.444
@@ -133,8 +149,4 @@ shadowmask_mode = 2
 interior = true
 texel_scale = 12.81
 environment_mode = 0
-light_data = ExtResource("2_ewk1p")
-
-[node name="Camera3D" type="Camera3D" parent="." unique_id=1530868902]
-transform = Transform3D(0.7417594, 0.30164805, -0.5990003, 0.01906945, 0.8832954, 0.46842927, 0.6703948, -0.35888442, 0.6494405, -2.9705465, 2.637886, 2.731176)
-fov = 55.53253
+light_data = ExtResource("3_cyfgi")
