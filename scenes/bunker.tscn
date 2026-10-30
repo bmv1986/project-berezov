@@ -158,5 +158,5 @@ environment_mode = 0
 light_data = ExtResource("3_cyfgi")
 
 [node name="Robot" parent="." unique_id=1227424136 instance=ExtResource("7_6gqei")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.672272, 0.00048828125, -5.523699)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.672272, 0.2123583, -5.523699)
 script = ExtResource("8_q0tom")
