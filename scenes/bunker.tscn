@@ -5,8 +5,14 @@
 [ext_resource type="LightmapGIData" uid="uid://dxrhnhpgjixrn" path="res://scenes/bunker.lmbake" id="3_cyfgi"]
 [ext_resource type="PackedScene" uid="uid://bcr4tdjvonwhf" path="res://models/build/door1.glb" id="4_hk1w7"]
 [ext_resource type="Script" uid="uid://dgh2lfpc0n288" path="res://scenes/GateController.gd" id="5_tyiie"]
+[ext_resource type="PackedScene" uid="uid://buetd5r1qlt4y" path="res://scenes/robot.tscn" id="7_6gqei"]
+[ext_resource type="PackedScene" uid="uid://diqexdxt3tqb4" path="res://scenes/power.tscn" id="8_hqi4v"]
+[ext_resource type="Script" uid="uid://cdbg8hovja7ml" path="res://scenes/robot.gd" id="8_q0tom"]
 
 [node name="bunker" type="Node3D" unique_id=1739662495]
+
+[node name="Power" parent="." unique_id=667546472 instance=ExtResource("8_hqi4v")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.2743926, 0, -1.0223184)
 
 [node name="bunker2" parent="." unique_id=479578058 instance=ExtResource("1_764y3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18733144, 0, 0.17221904)
@@ -150,3 +156,7 @@ interior = true
 texel_scale = 12.81
 environment_mode = 0
 light_data = ExtResource("3_cyfgi")
+
+[node name="Robot" parent="." unique_id=1227424136 instance=ExtResource("7_6gqei")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.672272, 0.00048828125, -5.523699)
+script = ExtResource("8_q0tom")

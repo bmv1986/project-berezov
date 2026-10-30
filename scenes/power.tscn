@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://diqexdxt3tqb4"]
+
+[ext_resource type="PackedScene" uid="uid://ctdj4b5i743he" path="res://models/power.glb" id="1_tvpre"]
+
+[node name="Power" type="Node3D" unique_id=667546472]
+
+[node name="power" parent="." unique_id=1366130144 instance=ExtResource("1_tvpre")]

@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://buetd5r1qlt4y"]
+
+[ext_resource type="PackedScene" uid="uid://dsvod14bimm8v" path="res://models/robo.glb" id="1_ykvnc"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ykvnc"]
+size = Vector3(0.5206146, 0.25720215, 0.48498535)
+
+[node name="Robot" type="CharacterBody3D" unique_id=1227424136]
+
+[node name="Robot" parent="." unique_id=1457474797 instance=ExtResource("1_ykvnc")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0)
+
+[node name="Camera3" type="Camera3D" parent="Robot" unique_id=1865290004]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2166096, -0.23160058)
+fov = 136.14
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=597660424]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005088806, 0.1281128, 0.0038452146)
+shape = SubResource("BoxShape3D_ykvnc")

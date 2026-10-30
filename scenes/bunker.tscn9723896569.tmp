@@ -1,0 +1,158 @@
+[gd_scene format=3 uid="uid://ffi0cviqxt3"]
+
+[ext_resource type="PackedScene" uid="uid://170mn7nnoq38" path="res://models/build/bunker.glb" id="1_764y3"]
+[ext_resource type="Texture2D" uid="uid://bwn06ug7h603r" path="res://decal/1.png" id="2_cyfgi"]
+[ext_resource type="LightmapGIData" uid="uid://dxrhnhpgjixrn" path="res://scenes/bunker.lmbake" id="3_cyfgi"]
+[ext_resource type="PackedScene" uid="uid://bcr4tdjvonwhf" path="res://models/build/door1.glb" id="4_hk1w7"]
+[ext_resource type="Script" uid="uid://dgh2lfpc0n288" path="res://scenes/GateController.gd" id="5_tyiie"]
+[ext_resource type="PackedScene" uid="uid://dsvod14bimm8v" path="res://models/robo.glb" id="6_tyiie"]
+[ext_resource type="Script" uid="uid://dq35fss1di160" path="res://scripts/Robot.gd" id="7_6gqei"]
+
+[node name="bunker" type="Node3D" unique_id=1739662495]
+
+[node name="bunker2" parent="." unique_id=479578058 instance=ExtResource("1_764y3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18733144, 0, 0.17221904)
+
+[node name="gate" parent="bunker2" unique_id=520104510 instance=ExtResource("4_hk1w7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1789997, 0, -3.1375606)
+script = ExtResource("5_tyiie")
+
+[node name="AreaLight3D" type="AreaLight3D" parent="bunker2" unique_id=412284505]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.29761672, 2.922669, -0.639391)
+visible = false
+light_energy = 3.222
+shadow_enabled = true
+shadow_bias = 2.253
+shadow_normal_bias = 0.444
+shadow_reverse_cull_face = true
+shadow_blur = 2.736
+
+[node name="AreaLight3D10" type="AreaLight3D" parent="bunker2" unique_id=2037362313]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.3099988, 2.922669, -6.34709)
+visible = false
+light_energy = 1.592
+shadow_enabled = true
+shadow_bias = 2.253
+shadow_normal_bias = 0.444
+shadow_reverse_cull_face = true
+shadow_blur = 2.736
+
+[node name="AreaLight3D2" type="AreaLight3D" parent="bunker2" unique_id=1183913310]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 22.840004, 2.9826593, -0.639391)
+visible = false
+light_energy = 3.222
+shadow_enabled = true
+shadow_bias = 0.0
+shadow_normal_bias = 0.444
+shadow_blur = 2.736
+
+[node name="AreaLight3D4" type="AreaLight3D" parent="bunker2" unique_id=1405354735]
+transform = Transform3D(-4.371139e-08, 1, 4.371139e-08, -0.79132867, -6.131483e-08, 0.61139107, 0.61139107, -7.8653235e-09, 0.79132867, 34.047035, 2.54012, -4.2951727)
+visible = false
+light_energy = 3.222
+shadow_enabled = true
+shadow_bias = 0.0
+shadow_normal_bias = 0.444
+shadow_blur = 2.736
+area_size = Vector2(0.08457184, 0.5019808)
+
+[node name="AreaLight3D5" type="AreaLight3D" parent="bunker2" unique_id=2007083893]
+transform = Transform3D(-4.371139e-08, 1, 4.371139e-08, 0.8914419, 1.9159001e-08, 0.45313504, 0.45313504, 5.8773324e-08, -0.8914419, 34.047035, 2.54012, -7.6685896)
+visible = false
+light_energy = 3.222
+shadow_enabled = true
+shadow_bias = 0.0
+shadow_normal_bias = 0.444
+shadow_blur = 2.736
+area_size = Vector2(0.08457184, 0.5019808)
+
+[node name="AreaLight3D6" type="AreaLight3D" parent="bunker2" unique_id=1983881756]
+transform = Transform3D(-4.371139e-08, 1, 4.3711392e-08, -0.79132867, -6.131482e-08, 0.61139107, 0.61139107, -7.8653235e-09, 0.79132867, 37.674026, 2.54012, -4.2951727)
+visible = false
+light_energy = 3.222
+shadow_enabled = true
+shadow_bias = 0.0
+shadow_normal_bias = 0.444
+shadow_blur = 2.736
+area_size = Vector2(0.08457184, 0.5019808)
+
+[node name="AreaLight3D7" type="AreaLight3D" parent="bunker2" unique_id=1161496945]
+transform = Transform3D(-4.371139e-08, 1, 4.371139e-08, 0.8914419, 1.9159001e-08, 0.45313504, 0.45313504, 5.8773324e-08, -0.8914419, 37.674026, 2.54012, -7.6685896)
+visible = false
+light_energy = 3.222
+shadow_enabled = true
+shadow_bias = 0.0
+shadow_normal_bias = 0.444
+shadow_blur = 2.736
+area_size = Vector2(0.08457184, 0.5019808)
+
+[node name="AreaLight3D8" type="AreaLight3D" parent="bunker2" unique_id=1963309233]
+transform = Transform3D(-4.371139e-08, 1, 4.371139e-08, -0.79132867, -6.131482e-08, 0.61139107, 0.61139107, -7.865321e-09, 0.79132867, 41.112106, 2.54012, -4.2951727)
+visible = false
+light_energy = 3.222
+shadow_enabled = true
+shadow_bias = 0.0
+shadow_normal_bias = 0.444
+shadow_blur = 2.736
+area_size = Vector2(0.08457184, 0.5019808)
+
+[node name="AreaLight3D9" type="AreaLight3D" parent="bunker2" unique_id=1478822673]
+transform = Transform3D(-4.371139e-08, 1, 4.371139e-08, 0.8914419, 1.9159001e-08, 0.45313504, 0.45313504, 5.8773324e-08, -0.8914419, 41.112106, 2.54012, -7.6685896)
+visible = false
+light_energy = 3.222
+shadow_enabled = true
+shadow_bias = 0.0
+shadow_normal_bias = 0.444
+shadow_blur = 2.736
+area_size = Vector2(0.08457184, 0.5019808)
+
+[node name="AreaLight3D3" type="AreaLight3D" parent="bunker2" unique_id=715325897]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 28.562862, 5.923795, -3.9140897)
+visible = false
+light_color = Color(1, 0.64366686, 0.571405, 1)
+light_energy = 0.556
+shadow_enabled = true
+shadow_bias = 0.0
+shadow_normal_bias = 0.444
+shadow_blur = 2.736
+area_range = 7.492
+area_attenuation = 0.583
+
+[node name="OmniLight3D" type="OmniLight3D" parent="bunker2" unique_id=1707993796]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.86988, 2.80291, 2.1157064)
+visible = false
+light_color = Color(1, 0.5207273, 0.45492554, 1)
+light_energy = 0.556
+shadow_enabled = true
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="bunker2" unique_id=1988450763]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.475977, 4.237893, -14.220066)
+visible = false
+light_color = Color(1, 0.5207273, 0.45492554, 1)
+light_energy = 0.556
+shadow_enabled = true
+
+[node name="OmniLight3D3" type="OmniLight3D" parent="bunker2" unique_id=963676749]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.475977, 4.237893, -7.1076355)
+visible = false
+light_color = Color(1, 0.5207273, 0.45492554, 1)
+light_energy = 0.556
+shadow_enabled = true
+
+[node name="Decal" type="Decal" parent="." unique_id=1969193844]
+transform = Transform3D(-4.371139e-08, -1, 0, -4.371139e-08, 1.9106855e-15, -1, 1, -4.371139e-08, -4.371139e-08, 2.820388, 2.1287067, 0.25332636)
+size = Vector3(6.66156, 0.36224365, 3.4942627)
+texture_albedo = ExtResource("2_cyfgi")
+normal_fade = 0.34
+
+[node name="LightmapGI" type="LightmapGI" parent="." unique_id=768065465]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.46559, -0.60178113, -0.027638197)
+shadowmask_mode = 2
+interior = true
+texel_scale = 12.81
+environment_mode = 0
+light_data = ExtResource("3_cyfgi")
+
+[node name="Robot" parent="." unique_id=540427144 instance=ExtResource("6_tyiie")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -1.1606655, 0.05504489, -5.3328223)
+script = ExtResource("7_6gqei")
