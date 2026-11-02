@@ -7,7 +7,6 @@ signal release_focus()
 signal hide_signal_screen()
 signal show_camera_feed()
 
-# Состояние игры
 var devices_scanned: bool = false
 var gate_opened: bool = false
 var dual_mode: bool = false
@@ -15,13 +14,11 @@ var selected_device: int = -1
 var previous_input_mode: String = ""
 var robot_camera_discovered: bool = false
 
-# Ссылки на объекты мира
 var world_scene: Node3D = null
 var world_scene2: Node3D = null
 var robot: Node3D = null
 var camera_controller: Node = null
 
-# SubViewport'ы
 var sub_viewport: SubViewport = null
 var sub_viewport2: SubViewport = null
 var tex_rect: TextureRect = null
@@ -46,7 +43,6 @@ func setup(
 	tex_rect = tr
 	tex_rect2 = tr2
 
-	# Подключаемся к сигналам робота
 	if robot and robot.has_signal("charging_zone_reached"):
 		robot.charging_zone_reached.connect(_on_robot_charging)
 	if robot and robot.has_signal("robot_camera_discovered"):
@@ -72,12 +68,12 @@ func handle_command(cmd: String, current_mode: String) -> String:
 			return _handle_robot_direct(cmd)
 		"paused":
 			return _handle_paused(cmd)
+		"os_mode":
+			return ""
 	return ""
 
 func get_initial_mode() -> String:
 	return "connect"
-
-# === ПОДКЛЮЧЕНИЕ ===
 
 func _handle_connect(cmd: String) -> String:
 	if cmd == "Y":
@@ -103,8 +99,6 @@ func after_connect_delay() -> String:
 	request_focus.emit()
 	return "action_menu"
 
-# === МЕНЮ ДЕЙСТВИЙ ===
-
 func _handle_action_menu(cmd: String) -> String:
 	match cmd:
 		"1":
@@ -119,6 +113,8 @@ func _handle_action_menu(cmd: String) -> String:
 					log_message.emit("  - КАМЕРА РОБОТА")
 			log_message.emit("")
 			log_message.emit("ВВЕДИТЕ 2 ДЛЯ ПОДКЛЮЧЕНИЯ К УСТРОЙСТВУ.")
+			log_message.emit("ВВЕДИТЕ 3 ДЛЯ КАМЕР.")
+			log_message.emit("ВВЕДИТЕ 0 ДЛЯ ГЛАВНОГО МЕНЮ.")
 			return "action_menu"
 		"2":
 			log_message.emit("ДОСТУПНЫЕ УСТРОЙСТВА:")
@@ -145,12 +141,18 @@ func _handle_action_menu(cmd: String) -> String:
 			log_message.emit("ВЫБЕРИТЕ КАМЕРУ:")
 			input_mode_changed.emit("camera_menu")
 			return "camera_menu"
+		"0":
+			log_message.emit("ГЛАВНОЕ МЕНЮ:")
+			log_message.emit("  1 - СКАНИРОВАТЬ УСТРОЙСТВА")
+			log_message.emit("  2 - ПОДКЛЮЧИТЬСЯ К УСТРОЙСТВУ")
+			log_message.emit("  3 - КАМЕРЫ")
+			log_message.emit("")
+			log_message.emit("ВЫБЕРИТЕ ДЕЙСТВИЕ:")
+			return "action_menu"
 		_:
-			log_message.emit("НЕВЕРНЫЙ ВЫБОР. ВВЕДИТЕ 1, 2 ИЛИ 3.")
+			log_message.emit("НЕВЕРНЫЙ ВЫБОР. ВВЕДИТЕ 1, 2, 3 ИЛИ 0.")
 			return "action_menu"
 	return "action_menu"
-
-# === УСТРОЙСТВА ===
 
 func _handle_device(cmd: String) -> String:
 	if cmd == "0":
@@ -173,7 +175,7 @@ func _handle_device(cmd: String) -> String:
 			if not gate_opened:
 				log_message.emit("РОБОТ НЕДОСТУПЕН. СНАЧАЛА ОТКРОЙТЕ ВОРОТА.")
 				return "device"
-			if robot:
+			if robot and robot.has_method("set_active"):
 				robot.set_active(true)
 			log_message.emit("ПОДКЛЮЧЕНИЕ К РОБОТУ-РАЗВЕДЧИКУ...")
 			return "robot_pending"
@@ -201,8 +203,6 @@ func after_device_pending(mode: String) -> String:
 		release_focus.emit()
 		return "robot_direct"
 	return "action_menu"
-
-# === ОТКРЫТИЕ ВОРОТ ===
 
 func _handle_open_confirm(cmd: String) -> String:
 	if cmd == "0":
@@ -253,8 +253,6 @@ func _find_and_open_gates(root: Node) -> void:
 		root.open_gate()
 	for child in root.get_children():
 		_find_and_open_gates(child)
-
-# === КАМЕРЫ ===
 
 func _handle_camera_menu(cmd: String) -> String:
 	if cmd == "0":
@@ -413,11 +411,9 @@ func _handle_camera(cmd: String) -> String:
 
 	return "camera"
 
-# === РОБОТ ===
-
 func _handle_robot_direct(cmd: String) -> String:
 	if cmd == "0":
-		if robot:
+		if robot and robot.has_method("set_active"):
 			robot.set_active(false)
 		log_message.emit("ОТКЛЮЧЕНИЕ ОТ РОБОТА.")
 		input_mode_changed.emit("action_menu")
@@ -426,8 +422,6 @@ func _handle_robot_direct(cmd: String) -> String:
 	else:
 		log_message.emit("В РЕЖИМЕ УПРАВЛЕНИЯ ИСПОЛЬЗУЙТЕ WASD. ДЛЯ ВЫХОДА ВВЕДИТЕ 0.")
 		return "robot_direct"
-
-# === ПАУЗА ===
 
 func handle_escape(current_mode: String) -> String:
 	if current_mode == "paused":
@@ -446,8 +440,6 @@ func handle_escape(current_mode: String) -> String:
 
 func _handle_paused(cmd: String) -> String:
 	return "paused"
-
-# === DUAL MODE ===
 
 func _toggle_dual_mode() -> void:
 	var viewport_rect: Rect2 = get_viewport().get_visible_rect()
@@ -507,8 +499,6 @@ func _toggle_dual_mode() -> void:
 
 		dual_mode = false
 		log_message.emit("РЕЖИМ ОДНОЙ КАМЕРЫ АКТИВИРОВАН.")
-
-# === СИГНАЛЫ РОБОТА ===
 
 func _on_robot_charging(is_charging: bool) -> void:
 	if is_charging:

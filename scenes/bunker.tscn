@@ -7,7 +7,6 @@
 [ext_resource type="Script" uid="uid://dgh2lfpc0n288" path="res://scenes/GateController.gd" id="5_tyiie"]
 [ext_resource type="PackedScene" uid="uid://buetd5r1qlt4y" path="res://scenes/robot.tscn" id="7_6gqei"]
 [ext_resource type="PackedScene" uid="uid://diqexdxt3tqb4" path="res://scenes/power.tscn" id="8_hqi4v"]
-[ext_resource type="Script" uid="uid://cdbg8hovja7ml" path="res://scenes/robot.gd" id="8_q0tom"]
 
 [node name="bunker" type="Node3D" unique_id=1739662495]
 
@@ -159,4 +158,3 @@ light_data = ExtResource("3_cyfgi")
 
 [node name="Robot" parent="." unique_id=1227424136 instance=ExtResource("7_6gqei")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.672272, 0.2123583, -5.523699)
-script = ExtResource("8_q0tom")
